@@ -26,17 +26,23 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        self.tableView.register(WeatherCell.nib, forCellReuseIdentifier: WeatherCell.identifier)
+        
+        configureViews()
         
         self.viewModel.loadStandartCities() { [weak self] in
             self?.tableView.reloadData()
         }
+    }
+    
+    func configureViews() {
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.register(WeatherCell.nib, forCellReuseIdentifier: WeatherCell.identifier)
         
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
+        searchController.delegate = self
         self.definesPresentationContext = true
         self.navigationItem.searchController = searchController
     }
@@ -66,10 +72,17 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 extension HomeViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let city = searchController.searchBar.text else { return }
-        if city != "" {
-            viewModel.loadSearchCity(for: city) { [weak self] in
-                self?.tableView.reloadData()
-            }
+        
+        viewModel.loadSearchCity(for: city) { [weak self] in
+            self?.tableView.reloadData()
+        }
+    }
+}
+
+extension HomeViewController: UISearchControllerDelegate {
+    func didDismissSearchController(_ searchController: UISearchController) {
+        viewModel.loadStandartCities { [weak self] in
+            self?.tableView.reloadData()
         }
     }
 }

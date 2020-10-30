@@ -26,11 +26,14 @@ class DetailWeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureViews()
+    }
+    
+    func configureViews() {
         countryLabel?.text = "Country: \(viewModel.weather.sys.country)"
         windLabel?.text = "Wind speed: \(viewModel.weather.wind.speed)m/s"
         statusLabel.text = "\(viewModel.weather.weather.first?.main ?? "")"
         self.navigationItem.title = "\(viewModel.weather.name)"
-        
     }
     
 }

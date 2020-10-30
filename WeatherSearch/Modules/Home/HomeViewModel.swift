@@ -14,6 +14,9 @@ protocol HomeViewModelProtocol: class {
     func loadSearchCity(for city: String, completion: (() -> ())?)
 }
 
+// Я не знал можно ли использовать стороние библиотеки
+// поэтому не использовал RxSwift и пришлось заморачиваться с completion в функциях
+
 class HomeViewModel: HomeViewModelProtocol {
     var weatherCities: [WeatherCityResponse] = []
     let standartCityNames = ["Moscow", "New York", "London", "Tokyo", "Seoul", "Orsk", "Madrid", "Berlin", "Paris", "Incheon"]
@@ -36,27 +39,25 @@ class HomeViewModel: HomeViewModelProtocol {
                 case .success(let response):
                     self?.weatherCities.append(response)
                     completion?()
-                case .failure(let error):
-                    print(error)
+                case .failure(_):
+                    break
                 }
             }
         }
     }
     
     func loadSearchCity(for city: String, completion: (() -> ())? = nil) {
-        if city == "" {
-            return
-        }
-        
-        self.weatherCities = []
-        
-        service.fetchWeather(for: city) { (result) in
-            switch result {
-            case .success(let response):
-                self.weatherCities.append(response)
-                completion?()
-            case .failure(let error):
-                print(error)
+        if city != "" {
+            self.weatherCities = []
+            
+            service.fetchWeather(for: city) { (result) in
+                switch result {
+                case .success(let response):
+                    self.weatherCities.append(response)
+                    completion?()
+                case .failure(_):
+                    break
+                }
             }
         }
     }
